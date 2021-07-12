@@ -1244,7 +1244,9 @@
     <Content Include="Views\Currency\List.cshtml" />
     <Content Include="Views\Currency\_CreateOrUpdate.cshtml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="bin\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
