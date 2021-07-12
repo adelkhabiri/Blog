@@ -1,0 +1,2 @@
+DataProvider: sqlserver
+DataConnectionString: Data Source=DESKTOP-NLU77DK;Initial Catalog=Blog;Integrated Security=False;Persist Security Info=False;User ID=sa;Password=adel2351989

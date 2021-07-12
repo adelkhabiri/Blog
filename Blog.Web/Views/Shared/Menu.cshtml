@@ -1,0 +1,122 @@
+﻿@using System.Globalization
+@using Blog.Core.Infrastructure;
+@using Blog.Core.Domain
+@using Blog.Web.Framework
+@using Blog.Core
+@using Blog.Core.Domain.Localization
+@using Blog.Web.Framework.Menu
+@using Blog.Web.Framework.UI;
+@{
+    //load sitemap
+    var siteMap = new Blog.Web.Framework.Menu.XmlSiteMap();
+    siteMap.LoadFrom("~/sitemap.config");
+    var supportRtl = EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage.Rtl;
+    //!EngineContext.Current.Resolve<LocalizationSettings>().IgnoreRtlPropertyForAdminArea*@;
+}
+
+@helper RenderMenuItem(Blog.Web.Framework.Menu.SiteMapNode item, bool supportRtl)
+{
+    string url = null;
+    if (!string.IsNullOrEmpty(item.ControllerName) && !string.IsNullOrEmpty(item.ActionName))
+    {
+        url = Url.Action(item.ActionName, item.ControllerName, item.RouteValues, null, null);
+    }
+    else if (!string.IsNullOrEmpty(item.Url))
+    {
+        url = item.Url.StartsWith("~/", StringComparison.Ordinal) ? Url.Content(item.Url) : item.Url;
+    }
+    var isActive = item.ContainsSystemName(Html.GetActiveMenuItemSystemName());
+
+    if (!String.IsNullOrEmpty(url))
+    {
+        <li @(isActive ? Html.Raw("class=\"active current-active-item\"") : null)>
+            <a href="@url" class="menu-item-link" @(item.OpenUrlInNewTab ? Html.Raw(" target=\"_blank\"") : null) style="background-color:rgb(106,176,74);color:white;border-bottom:2px solid white;">
+                @if (!String.IsNullOrEmpty(item.IconClass))
+                {
+                    <text>
+                        @if (supportRtl)
+                        {
+
+                            <i class="fa @Url.Content(item.IconClass)" style="border-left:2px solid white;"></i>
+                        }
+                        else
+                        {
+                            <i class="fa @Url.Content(item.IconClass)" style="border-right:2px solid white;"></i>
+                        }
+                    </text>
+                }
+                <span class="menu-item-title">@item.Title</span>
+            </a>
+        </li>
+    }
+    else
+    {
+        <li class="treeview @(isActive ? Html.Raw("active current-active-item") : null) link mdc-drawer-link">
+            <a calss="mdc-list-item mdc-drawer-item" href="#" style="color:white;border-bottom:2px solid white;">
+                @if (!String.IsNullOrEmpty(item.IconClass))
+                {
+                    <text>
+                        @if (supportRtl)
+                        {
+
+                            <i class="fa @Url.Content(item.IconClass)" style="border-left: 2px solid white;"></i>
+                        }
+                        else
+                        {
+                            <i class="fa @Url.Content(item.IconClass)" style="border-right: 2px solid white;"></i>
+                        }
+
+                    </text>
+                }
+                <span>@item.Title</span>
+                @if (supportRtl)
+                {
+                    <i class="fa fa-angle-left pull-right"></i>
+                }
+                else
+                {
+                    <i class="fa fa-angle-right pull-right"></i>
+                }
+            </a>
+
+            @{ var childNodes = item.ChildNodes/*.Where(x => x.Visible)*/.ToList(); }
+            @if (childNodes.Any())
+            {
+                <ul class="menu-item-link treeview-menu link" style="color:white;">
+                    @foreach (var childItem in childNodes)
+                    {
+                        @RenderMenuItem(childItem, supportRtl)
+                    }
+                </ul>
+            }
+        </li>
+    }
+}
+
+<ul class="sidebar-menu  link mdc-list-group">
+    @{
+        //standard (default) items
+        var rootNode = siteMap.RootNode;
+
+        ////plugins
+        //var adminMenuPlugins = EngineContext.Current.Resolve<Blog.Core.Plugins.IPluginFinder>()
+        //    .GetPlugins<IAdminMenuPlugin>()
+        //    .ToList();
+        //foreach (var adminMenuPlugin in adminMenuPlugins)
+        //{
+        //    adminMenuPlugin.ManageSiteMap(rootNode);
+        //}
+        ////"Plugins" menu item should be visible when it has some child nodes
+        //var pluginNode = rootNode.ChildNodes.FirstOrDefault(x => x.SystemName == "Third party plugins");
+        //if (pluginNode != null && pluginNode.Visible)
+        //{
+        //    var permissionService = EngineContext.Current.Resolve<Blog.Services.Security.IPermissionService>();
+        //    var hasManagePluginsPermission = permissionService.Authorize(Blog.Services.Security.StandardPermissionProvider.ManagePlugins);
+        //    pluginNode.Visible = hasManagePluginsPermission && pluginNode.ChildNodes.Any(x => x.Visible);
+        //}
+    }
+    @foreach (var item in rootNode.ChildNodes/*.Where(x => x.Visible)*/)
+    {
+        @RenderMenuItem(item, supportRtl)
+    }
+</ul>

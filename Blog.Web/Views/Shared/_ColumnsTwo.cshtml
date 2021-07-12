@@ -1,0 +1,123 @@
+﻿@using Blog.Web.Framework
+@using System.Globalization
+@*@using Blog.Core.Domain.Customers*@
+@using Blog.Web.Framework.UI;
+@using Blog.Core;
+@using Blog.Core.Infrastructure;
+@using Blog.Core.Domain
+@*@using Blog.Core.Domain.Common;*@
+@using Blog.Core.Domain.Localization
+@using Blog.Services.Common
+
+
+@{
+
+    var kendoVersion = "2014.1.318";
+    var supportRtl = EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage.Rtl &&
+        !EngineContext.Current.Resolve<LocalizationSettings>().IgnoreRtlPropertyForAdminArea;
+
+    //CSS resources
+    if (supportRtl)
+    {
+        Html.AppendCssFileParts("~/Content/styles.rtl.css");
+        Html.AppendCssFileParts("~/Content/adminLTE/AdminLTE-2.3.0.rtl.css");
+        Html.AppendCssFileParts("~/Content/bootstrap/css/bootstrap.rtl.css");
+        Html.AppendCssFileParts("~/Content/Addedstyle.css");
+    }
+    else
+    {
+        Html.AppendCssFileParts("~/Content/styles.css");
+        Html.AppendCssFileParts("~/Content/adminLTE/AdminLTE-2.3.0.css");
+        Html.AppendCssFileParts("~/Content/bootstrap/css/bootstrap.min.css");
+        Html.AppendCssFileParts("~/Content/Addedstyle.css");
+    }
+    Html.AppendCssFileParts("~/Content/AnimiButton.css");
+    Html.AppendCssFileParts("~/Content/NewButton.css");
+    Html.AppendCssFileParts(string.Format("~/Content/kendo/{0}/kendo.rtl.min.css", kendoVersion));
+    Html.AppendCssFileParts(string.Format("~/Content/kendo/{0}/kendo.default.min.css", kendoVersion));
+    Html.AppendCssFileParts(string.Format("~/Content/kendo/{0}/kendo.common.min.css", kendoVersion));
+    Html.AppendCssFileParts("~/Content/jquery-ui-themes/smoothness/jquery-ui-1.10.3.custom.min.css");
+    Html.AppendCssFileParts("~/Content/fontAwesome/css/font-awesome-4.6.3.min.css");
+    Html.AppendCssFileParts("~/Content/typeahead/typeahead.css");
+    Html.AppendCssFileParts("~/Content/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css");
+    <!-- AdminLTE Skins (choose a skin from the css/skins) -->
+    Html.AppendCssFileParts("~/Content/adminLTE/skins/_all-skins.css");
+
+    //scripts
+    Html.AppendScriptParts(string.Format("~/Scripts/kendo/{0}/kendo.web.min.js", kendoVersion));
+    Html.AppendScriptParts("~/Scripts/admin.search.js");
+    Html.AppendScriptParts("~/scripts/admin.navigation.js");
+    Html.AppendScriptParts("~/Scripts/admin.common.js");
+    Html.AppendScriptParts("~/Scripts/typeahead/typeahead.bundle.min.js");
+    Html.AppendScriptParts("~/Scripts/jquery-migrate-1.2.1.min.js");
+    Html.AppendScriptParts("~/Scripts/jquery-ui-1.10.3.custom.min.js");
+    Html.AppendScriptParts("~/Scripts/jquery.validate.unobtrusive.min.js");
+    Html.AppendScriptParts("~/Scripts/jquery.validate.min.js");
+    Html.AppendScriptParts("~/Scripts/adminLTE/app.min.js");
+    Html.AppendScriptParts("~/Scripts/bootstrap/bootstrap.min.js");
+    Html.AppendScriptParts("~/Scripts/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js");
+    Html.AppendScriptParts("~/Scripts/jquery-1.10.2.min.js");
+
+    Html.AppendScriptParts("~/Scripts/AddedJS/dashboard.js");
+    Html.AppendScriptParts("~/Scripts/AddedJS/farbtastic.js");
+    Html.AppendScriptParts("~/Scripts/AddedJS/material.js");
+    Html.AppendScriptParts("~/Scripts/AddedJS/misc.js");
+    Html.AppendScriptParts("~/Scripts/AddedJS/preloader.js");
+    //page title
+    string adminPageTitle = !String.IsNullOrWhiteSpace(ViewBag.Title) ? ViewBag.Title + " / " : "";
+    adminPageTitle += T("Admin.PageTitle").Text;
+
+    ////has "Manage Maintenance" permission?
+    //var canManageMaintenance = EngineContext.Current.Resolve<IPermissionService>()
+    //    .Authorize(StandardPermissionProvider.ManageMaintenance);
+
+    ////X-UA-Compatible tag
+    //var commonSettings = EngineContext.Current.Resolve<CommonSettings>();
+    //if (commonSettings.RenderXuaCompatible)
+    //{
+    //    Html.AppendHeadCustomParts(string.Format("<meta http-equiv=\"X-UA-Compatible\" content=\"{0}\"/>", commonSettings.XuaCompatibleValue));
+    //}
+
+    //sidebar
+    const string hideSidebarAttributeName = "HideSidebar";
+    var hideSidebar = EngineContext.Current.Resolve<IWorkContext>().CurrentCustomer.GetAttribute<bool>(hideSidebarAttributeName);
+
+    ////avatar
+    //var currentCustomer = EngineContext.Current.Resolve<IWorkContext>().CurrentCustomer;
+
+    //info: we specify "Admin" area for actions and widgets here for cases when we use this layout in a plugin that is running in a different area than "admin"
+}
+@{
+    Layout = "~/Views/Shared/_Root.cshtml";
+}
+@{
+
+
+}
+@if (IsSectionDefined("Breadcrumb"))
+{
+    @section Breadcrumb {
+        @RenderSection("Breadcrumb")
+    }
+}
+@*<div class="side-2">
+        @if (IsSectionDefined("left"))
+        {
+            @RenderSection("left")
+        }
+        else
+        {
+            @Html.Widget("left_side_column_before")
+            @Html.Widget("left_side_column_after_category_navigation")
+            @Html.Action("VendorNavigation", "Catalog")
+            @Html.Action("RecentlyViewedProductsBlock", "Product", new { productThumbPictureSize = 64 })
+            @Html.Action("PopularProductTags", "Catalog")
+            @Html.Action("PollBlock", "Poll", new { systemKeyword = "LeftColumnPoll" })
+            @Html.Widget("left_side_column_after")
+        }
+    </div>*@
+<div class="center-2">
+    @*@Html.Widget("main_column_before")*@
+    @RenderBody()
+    @*@Html.Widget("main_column_after")*@
+</div>
